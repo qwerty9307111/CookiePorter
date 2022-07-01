@@ -1,0 +1,39 @@
+{
+  "name": "CookiePorter",
+  "description" : "CookiePorter",
+  "version": "1.2",
+  "manifest_version": 3,
+  "icons": {
+    "16": "images/cookie.png",
+    "48": "images/cookie.png",
+    "128": "images/cookie.png"
+  },
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_icon": "images/cookie.png"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "MacCtrl+Shift+F"
+      },
+      "description": "Opens popup page"
+    }
+  },
+  "permissions": [
+    "notifications",
+    "storage",
+    "activeTab",
+    "tabs",
+    "cookies",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "optional_host_permissions": [
+    "*://*/*"
+  ]
+}

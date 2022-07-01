@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CookiePorter</title>
+    <script src="./scripts/module.js"></script>
+    <script src="../dependencies/lodash.flow/index.js"></script>
+    <link rel="stylesheet" href="../dependencies/bulma.min.css">
+    <style>
+      .content-box {
+        width: 400px;
+        box-sizing: border-box;
+        padding: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content-box">
+      <div class="is-flex mb-3">
+        <figure class="image is-24x24">
+          <img src="../images/cookie.png" alt="logo">
+        </figure>
+        <p class="title is-4 ml-2">CookiePorter</p>
+      </div>
+      <div class="field">
+        <label class="label">Origin</label>
+        <div class="control">
+          <input id="origin" class="input" type="text" placeholder="origin">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Cookie Key</label>
+        <div class="control">
+          <input id="key" class="input" type="text" placeholder="passport_access_token" value="passport_access_token">
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button id="submit" type="submit" class="button is-link">Insert</button>
+        </div>
+      </div>
+
+      <section class="hero is-small is-link">
+        <div class="hero-body">
+          <p class="title">
+            By
+          </p>
+          <p class="subtitle">
+            客户运营研发部/前端团队
+          </p>
+        </div>
+      </section>
+    </div>
+  </body>
+
+  <script src="./scripts/popup.js"></script>
+
+</html>
