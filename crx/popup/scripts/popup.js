@@ -1,25 +1,29 @@
-/* global flow */
+/* global chrome flow */
 const ORIGIN_INPUT = document.querySelector('#origin')
 const KEY_INPUT = document.querySelector('#key')
 const SUBMIT_BUTTON = document.querySelector('#submit')
 const CLASS_SEPARATOR = ' '
+const DEFAULT_COOKIE_KEY = 'passport_access_token'
 
-const startsWithHttp = url => typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))
 const classNameToClassList = className => typeof className === 'string' ? className.split(CLASS_SEPARATOR) : []
 const classListToClassName = classList => Array.isArray(classList) ? classList.join(CLASS_SEPARATOR) : ''
 const deDuplication = arr => Array.isArray(arr) ? [...new Set(arr)] : arr
 const concatArray = (arr1, arr2) => arr1.concat(arr2)
-const addClass = (el, className) => el.className = flow(
-  concatArray,
-  deDuplication,
-  classListToClassName
-)(
-  classNameToClassList(el.className),
-  classNameToClassList(className)
+const addClass = (el, className) => (
+  el.className = flow(
+    concatArray,
+    deDuplication,
+    classListToClassName
+  )(
+    classNameToClassList(el.className),
+    classNameToClassList(className)
+  )
 )
-const removeClass = (el, className) => el.className = el.className.replace(`${className}`, '').trim()
+const removeClass = (el, className) => (
+  el.className = el.className.replace(`${className}`, '').trim()
+)
 const getOriginValue = () => ORIGIN_INPUT?.value
-const getCookieKeyValue = () => KEY_INPUT?.value || 'passport_access_token'
+const getCookieKeyValue = () => KEY_INPUT?.value || DEFAULT_COOKIE_KEY
 
 const $message = {
   success (message) {
@@ -57,9 +61,9 @@ const throwChromeError = () => {
 
 const reload = tab => {
   chrome.scripting.executeScript({
-    target: {tabId: tab.id, allFrames: true},
+    target: { tabId: tab.id, allFrames: true },
     func: () => location.reload()
-})
+  })
 }
 
 const setCookieToCurrentTab = cookie => {
@@ -77,7 +81,7 @@ const setCookieToCurrentTab = cookie => {
         }
       })
     }
-  });
+  })
 }
 
 const getCookieCallback = cookie => {
@@ -104,20 +108,19 @@ const queryTabsCallback = tabs => {
 const queryTabs = params => chrome.tabs.query(params, queryTabsCallback)
 
 const verifyOriginField = () => {
-   const originValue = getOriginValue()
-    if (!originValue) {
-      addClass(ORIGIN_INPUT, 'is-danger')
-      return $message.warning('Origin is a required field')
-    }
-    let url = ''
-    try {
-      url = new URL(originValue)
-    } catch (e) {
-      addClass(ORIGIN_INPUT, 'is-danger')
-      return $message.warning('Origin is invalid')
-    }
-    removeClass(ORIGIN_INPUT, 'is-danger')
-    return true
+  const originValue = getOriginValue()
+  if (!originValue) {
+    addClass(ORIGIN_INPUT, 'is-danger')
+    return $message.warning('Origin is a required field')
+  }
+  try {
+    new URL(originValue)
+  } catch (e) {
+    addClass(ORIGIN_INPUT, 'is-danger')
+    return $message.warning('Origin is invalid')
+  }
+  removeClass(ORIGIN_INPUT, 'is-danger')
+  return true
 }
 
 const storageFormData = () => {
@@ -138,7 +141,6 @@ const onSubmit = () => {
 
 SUBMIT_BUTTON.addEventListener('click', onSubmit, false)
 
-
 ;(function getStorageData () {
   chrome.storage.sync.get('origin', function (data) {
     if (data && data.origin) {
@@ -151,4 +153,3 @@ SUBMIT_BUTTON.addEventListener('click', onSubmit, false)
     }
   })
 })()
-
