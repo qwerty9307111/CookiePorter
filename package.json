@@ -1,17 +1,43 @@
 {
-  "name": "dev-cookies",
+  "name": "cookie-porter",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "bash postinstall.sh"
+    "postinstall": "bash postinstall.sh",
+    "commit": "git-cz",
+    "changelog": "conventional-changelog -p angular -i ./CHANGELOG.md -s -r 0"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "cookie"
+  ],
+  "author": "Sean.Yin",
   "license": "ISC",
   "dependencies": {
     "bulma": "^0.9.4",
     "lodash.flow": "^3.5.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "commitizen": "^4.2.4",
+    "conventional-changelog-cli": "^2.2.2",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.18.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-html": "^6.2.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.3",
+    "eslint-plugin-promise": "^6.0.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint"
   }
 }
