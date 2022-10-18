@@ -1,7 +1,7 @@
 {
   "name": "CookiePorter",
   "description" : "CookiePorter",
-  "version": "1.3",
+  "version": "1.4",
   "manifest_version": 3,
   "icons": {
     "16": "images/cookie.png",
@@ -32,7 +32,8 @@
     "tabs",
     "cookies",
     "scripting",
-    "contextMenus"
+    "contextMenus",
+    "webRequest"
   ],
   "host_permissions": [
     "http://*/*",

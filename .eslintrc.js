@@ -14,6 +14,7 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    'no-new': 0
+    'no-new': 0,
+    'no-sequences': 0
   }
 }

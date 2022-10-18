@@ -1,4 +1,69 @@
 /* global chrome */
+const DEFAULT_COOKIE_KEY = 'passport_access_token'
+
+let localUrl = 'localhost:8081'
+let passportProjectServer = ''
+
+const $message = {
+  success (message) {
+    chrome.notifications.create(null, {
+      type: 'basic',
+      title: '成功',
+      iconUrl: '../images/success.png',
+      message
+    })
+  },
+  warning (message) {
+    chrome.notifications.create(null, {
+      type: 'basic',
+      title: '警告',
+      iconUrl: '../images/warning.png',
+      message
+    })
+  },
+  error (message) {
+    chrome.notifications.create(null, {
+      type: 'basic',
+      title: '错误',
+      iconUrl: '../images/error.png',
+      message
+    })
+  }
+}
+
+const throwChromeError = () => {
+  if (chrome.runtime.lastError) {
+    $message.error(chrome.runtime.lastError.message)
+    throw chrome.runtime.lastError
+  }
+}
+
+const queryString2Object = queryString => {
+  const qs = queryString.replace(/.*?\?/, '')
+  const result = {}
+  return [...new URL(`http://a?${qs}`).searchParams].reduce(
+    (cur, [k, v]) => ((cur[k] = v), cur),
+    result
+  )
+}
+
+const saveUrl = (currentUrl, updateUrl) => {
+  localUrl = currentUrl
+  passportProjectServer = queryString2Object(updateUrl).projectServer
+}
+
+const openUrlInCurrentPage = url => {
+  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+    throwChromeError()
+    if (tab) {
+      chrome.tabs.update(tab.id, { url })
+      saveUrl(tab.url, url)
+    } else {
+      $message.error('读取浏览器标签页信息失败，可尝试重新访问。')
+    }
+  })
+}
+
 const copyToClipboard = (tabId, textToCopy) => {
   chrome.scripting.executeScript({
     target: { tabId, allFrames: true },
@@ -57,6 +122,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab.active && tab.url) {
     createContextMenusByCookies(tab)
   }
+
+  if (changeInfo.url === undefined) { return false }
+  if (new URL(tab.url).origin === passportProjectServer) {
+    getCookie({
+      url: tab.url,
+      name: DEFAULT_COOKIE_KEY
+    })
+  }
 })
 
 chrome.contextMenus.onClicked.addListener(async (data) => {
@@ -78,3 +151,42 @@ chrome.contextMenus.onClicked.addListener(async (data) => {
     })
   }
 })
+
+chrome.webRequest.onResponseStarted.addListener((details) => {
+  const { statusCode, responseHeaders } = details
+  if (statusCode === 401) {
+    const { value } = (responseHeaders || []).find(i => i.name === 'redirect_url')
+    openUrlInCurrentPage(value)
+  }
+}, {
+  urls: [
+    '*://*/*'
+  ]
+}, ['responseHeaders'])
+
+const getCookieCallback = cookie => {
+  throwChromeError()
+  if (!cookie || !cookie.value) {
+    return $message.warning('没有获取到' + DEFAULT_COOKIE_KEY + '值')
+  }
+  setCookieToCurrentTab(cookie)
+}
+
+const getCookie = params => chrome.cookies.get(params, getCookieCallback)
+
+const setCookieToCurrentTab = cookie => {
+  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+    if (tab && tab.url) {
+      chrome.cookies.set({
+        url: localUrl,
+        name: cookie.name,
+        value: cookie.value
+      }, res => {
+        throwChromeError()
+        if (res) {
+          openUrlInCurrentPage(localUrl)
+        }
+      })
+    }
+  })
+}
